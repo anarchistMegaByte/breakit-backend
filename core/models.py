@@ -27,6 +27,18 @@ class User(AbstractUser):
         return str(self.phone_number)
 
 
+class UserNotifToken(models.Model):
+    user_fk = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tokens")
+    token = models.TextField(blank=False, null=False)
+    
+    class Meta:
+        verbose_name = 'UserNotifToken'
+        verbose_name_plural = "UserNotifTokens"
+
+    def __str__(self):
+        return str(self.user_fk.phone_number) + "-" + str(self.token)
+
+
 class UserProfile(models.Model):
     slot_1 = "7:00 - 7:30 AM"
     slot_2 = "7:30 - 8:00 AM"

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 from django.contrib.auth.admin import UserAdmin
-from .models import User, UserProfile, OrderDetails, OrderItems
+from .models import User, UserProfile, OrderDetails, OrderItems, UserNotifToken
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -37,6 +37,11 @@ class OrderItemsAdmin(admin.ModelAdmin):
     list_display = [field.name for field in OrderItems._meta.get_fields() if field.auto_created == False]
 
 
+class UserNotifTokenAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in UserNotifToken._meta.get_fields() if field.auto_created == False]
+
+
+admin.site.register(UserNotifToken, UserNotifTokenAdmin)
 admin.site.register(OrderItems, OrderItemsAdmin)
 admin.site.register(OrderDetails, OrderDetailsAdmin)
 admin.site.register(UserProfile, UserProfileAdmin)

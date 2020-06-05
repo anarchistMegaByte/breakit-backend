@@ -3,7 +3,7 @@ from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
 import json
 from django.views.decorators.csrf import csrf_exempt
-from core.models import User, UserProfile, OrderDetails, OrderItems
+from core.models import User, UserProfile, OrderDetails, OrderItems, UserNotifToken
 from foodmenu.models import FoodItems
 from breakit.settings import DEFAULT_RESPONSE_AS_DICT, SMS_API_KEY
 from utilities.sms import sendSMS
@@ -12,6 +12,7 @@ import redis
 from datetime import date
 import time
 import traceback
+
 
 # Create your views here.
 @require_http_methods(["POST"])
@@ -55,8 +56,10 @@ def verify_otp(request):
 
     r = redis.Redis(host='localhost', port=6379, db=0)
     rotp = r.get(phone_number)
+
     if rotp is not None:
-        if int(rotp) == int(otp):
+        rotp = int(rotp)
+        if rotp == int(otp):
             up = UserProfile.objects.get(user_fk__phone_number=phone_number)
             data_return = {}
             data_return["user_id"] = up.user_fk.id
@@ -110,7 +113,8 @@ def confirm_order(request):
     try:
         phone_number = data["phone_number"]
         address = data["address"]
-        pincode = int(data["pincode"])
+        # pincode = int(data["pincode"])
+        pincode = 401202
         delivery_slot = data["delivery_slot"]
         #[{"menu_id": id, "qty":5}]
         menu_items = data["menu_items"]
@@ -122,16 +126,16 @@ def confirm_order(request):
         od.order_id = int(time.time()*1000)
         od.order_date = date.today()
         od.user_fk = up.user_fk
-        od.total_cost = data["total_cost"]
+        od.total_cost = 0
         od.save()
 
         cost = 0
         for each_item in menu_items:
-            menu_item = FoodItems.objects.get(id = each_item["menu_id"])
+            menu_item = FoodItems.objects.get(id = each_item["food_item_id"])
             oi = OrderItems()
             oi.order_details_fk = od
             oi.menu_items_fk = menu_item
-            oi.qty = each_item["qty"]
+            oi.qty = each_item["quantity"]
             oi.item_cost = menu_item.price * oi.qty
             cost = cost + oi.item_cost
             oi.save()
@@ -164,3 +168,22 @@ def get_all_delivery_slots(request):
         result_dict.append(each_slot[1])
     print(result_dict)
     return JsonResponse({"data": result_dict})
+
+
+@require_http_methods(["POST"])
+@csrf_exempt
+def register_token(request):
+    result_dict = DEFAULT_RESPONSE_AS_DICT.copy()
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        phone_number = data["phone_number"]
+        token = data["token"]
+        u = User.objects.get(phone_number=phone_number)
+        UserNotifToken.objects.create(user_fk=u, token=token)
+        result_dict["status"] = True
+        result_dict["message"] = "Token Registered Succcessfully"
+        result_dict["data"] = {"phone_number": phone_number, "token": token}
+    except Exception as e:
+        result_dict["message"] = str(e)
+
+    return JsonResponse(result_dict)
