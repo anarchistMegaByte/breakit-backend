@@ -25,9 +25,11 @@ SECRET_KEY = 'oekc2g@*_-finy47ka23k8-sx+4*r!ckv(avjj3s-6)cl(!ey1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = 'core.User'
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Application definition
 
@@ -38,12 +40,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'phonenumber_field',
     'core',
     'foodmenu'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -128,7 +132,10 @@ USE_L10N = True
 
 USE_TZ = True
 
-    
+DEFAULT_RESPONSE_AS_DICT = {"status": False, "message": "Invalid request", "data": {}}
+
+SMS_API_KEY = 'DmfXKK+uqig-1NRjvFGmYfnUCgdbNx8kH7WNEmH47M'
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 

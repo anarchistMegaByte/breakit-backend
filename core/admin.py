@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 from django.contrib.auth.admin import UserAdmin
-from .models import User
+from .models import User, UserProfile, OrderDetails, OrderItems
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -24,4 +24,20 @@ class CustomUserAdmin(UserAdmin):
                 )
     add_form = PlainUserForm
 
+
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in UserProfile._meta.get_fields() if field.auto_created == False]
+
+
+class OrderDetailsAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in OrderDetails._meta.get_fields() if field.auto_created == False]
+
+
+class OrderItemsAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in OrderItems._meta.get_fields() if field.auto_created == False]
+
+
+admin.site.register(OrderItems, OrderItemsAdmin)
+admin.site.register(OrderDetails, OrderDetailsAdmin)
+admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(User, CustomUserAdmin)
