@@ -19,7 +19,7 @@ def get_todays_menu(request):
         menu = {}
         menu["menu_of_the_day_id"] = each_m.id
         menu["food_item_id"] = each_m.fooditem_fk.id
-        menu["image"] = "https://654b0087f920.ngrok.io" + each_m.fooditem_fk.image.url
+        menu["image"] = "https://fc425648a9d9.ngrok.io" + each_m.fooditem_fk.image.url
         menu["item"] = each_m.fooditem_fk.name
         menu["restaurant"] = each_m.fooditem_fk.restaurant_fk.name
         menu["price"] = each_m.fooditem_fk.price
