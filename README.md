@@ -74,6 +74,12 @@ python manage.py migrate
 ```
 
 
+### Install Redis Server
+```
+sudo apt install redis-server
+```
+
+
 ### Run server locally.
 
 ```
