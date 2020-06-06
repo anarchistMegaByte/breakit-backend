@@ -63,24 +63,18 @@ def _send_fcm_message(fcm_message):
 		print(resp.text)
 		return False
 
-def _build_common_message(num, token, data=None, validate_only=False):
+def _build_common_message(token, notification=None, validate_only=False):
 	"""Construct common notifiation message.
 	Construct a JSON object that will be used to define the
 	common parts of a notification message that will be sent
 	to any app instance subscribed to the news topic.
 	"""
-	if data is None:
+	if notification is None:
 		notification = {
 			"body" : "Ypour order is ready", 
 			"title": "Ypour order is ready i m here"
 		}
-		data = {
-			"image": "",
-			"title": "testing " + str(num),
-			"message": "FCM via HTTPSv1 : " + str(num),
-			"user": str(num),
-			"notification_type": "general :"  + str(num)
-		}
+
 	data_payload = {
 		"webpush" : {
 			"notification": notification,

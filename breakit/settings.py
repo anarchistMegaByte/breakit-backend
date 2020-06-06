@@ -143,3 +143,11 @@ STATIC_URL = '/static/'
 
 MEDIA_ROOT  = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+REDIS_HOSTNAME = 'localhost'
+
+# DEV settings: Use only if you know the consequences that will follow. Clear the redis data before uncommenting this
+# REDIS_HOSTNAME = 'dev-redis.glsnf7.0001.aps1.cache.amazonaws.com'
+
+CELERY_BROKER_URL = 'redis://' + REDIS_HOSTNAME + ':6379'
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL
