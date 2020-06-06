@@ -107,3 +107,11 @@ def delete_invalid_tokens(user_id):
 		if not res:
 			#delete entry from fcm_django table
 			each_device.delete()
+
+
+
+def send_notification(user_obj, notification):
+	from core.models import UserNotifToken
+	all_tokens = UserNotifToken.objects.filter(user_fk=user_obj)
+	for t in all_tokens:
+		_send_fcm_message(_build_common_message(t.token, notification=notification))

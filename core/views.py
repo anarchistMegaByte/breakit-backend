@@ -166,6 +166,18 @@ def confirm_order(request):
         data_return["total_cost"] = od.total_cost
         data_return["order_date"] = od.order_date
         result_dict["data"] = data_return
+
+        # Send notification
+        from utilities.notificationPanel import send_notification
+        notification = {
+            "title": "Hurray your breakfast for " + str(od.order_date) + " is confirmed.",
+            "body": "Expect your breakfast by " + str(up.delivery_slot) + "."
+        }
+        send_notification(up.user_fk, notification)
+
+
+        sms_str = "Hurray your breakfast for " + str(od.order_date) + " is confirmed." + "Expect your breakfast by " + str(up.delivery_slot) + "."
+        sendSMS(str(up.user_fk.phone_number)[-10:], sms_str)
     except Exception as e:
         result_dict["message"] = str(e)
     
@@ -192,6 +204,14 @@ def register_token(request):
         token = data["token"]
         u = User.objects.get(phone_number=phone_number)
         UserNotifToken.objects.get_or_create(user_fk=u, token=token)
+
+        from utilities.notificationPanel import send_notification
+        notification = {
+            "title": "BreakIt - Nudge.",
+            "body": "We will help you plan your breakfast daily."
+        }
+        send_notification(u, notification)
+
         result_dict["status"] = True
         result_dict["message"] = "Token Registered Succcessfully"
         result_dict["data"] = {"phone_number": phone_number, "token": token}
