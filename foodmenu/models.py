@@ -15,7 +15,7 @@ class Restaurants(models.Model):
 
 
 class FoodItems(models.Model):
-    name = models.CharField(max_length=300, null=False, blank=False, unique=True)
+    name = models.CharField(max_length=300, null=False, blank=False)
     description = models.TextField(blank=True, null=True, default=None)
     restaurant_fk = models.ForeignKey(Restaurants, on_delete=models.CASCADE, related_name="restaurants")
     price = models.IntegerField(blank=False, null=False)
@@ -25,9 +25,10 @@ class FoodItems(models.Model):
     class Meta:
         verbose_name = 'Food Item'
         verbose_name_plural = "Food Items"
+        unique_together = ['name', 'restaurant_fk']
 
     def __str__(self):
-        return str(self.name)
+        return str(self.name) + "-" + str(self.restaurant_fk.name)
 
 
 class MenuForTheDay(models.Model):

@@ -21,9 +21,9 @@ def register_or_login_otp(request):
     result_dict = DEFAULT_RESPONSE_AS_DICT.copy()
     data = json.loads(request.body.decode('utf-8'))
     phone_number = data["phone_number"]
-    
+    print(data)
     try:
-        user, created  = User.objects.get_or_create(phone_number=phone_number)
+        user, created  = User.objects.get_or_create(phone_number="+91" + str(phone_number)[-10:])
     except Exception as e:
         result_dict["messgae"] = str(e)
 
@@ -32,10 +32,13 @@ def register_or_login_otp(request):
     otp = r.get(str(user.phone_number))
     if otp is None:
         otp = random.randint(1000,9999)
+    else:
+        otp = int(otp)
     r.set(str(user.phone_number), str(otp), ex=60)
 
     resp =  sendSMS(str(user.phone_number)[-10:], "Your OTP for breakIt login is " + str(otp))
     resp = json.loads(resp)
+    print(resp)
     if resp["status"] == "failure":
         result_dict["messgae"] = "SMS provider seems to be down please try again in some time."
         print(str(user.phone_number))
@@ -53,26 +56,35 @@ def verify_otp(request):
     data = json.loads(request.body.decode('utf-8'))
     phone_number = data["phone_number"]
     otp = data["otp"]
-
+    print(data)
+    print(data["phone_number"])
     r = redis.Redis(host='localhost', port=6379, db=0)
     rotp = r.get(phone_number)
 
     if rotp is not None:
         rotp = int(rotp)
         if rotp == int(otp):
-            up = UserProfile.objects.get(user_fk__phone_number=phone_number)
-            data_return = {}
-            data_return["user_id"] = up.user_fk.id
-            data_return["address"] = up.address
-            data_return["delivery_slot"] = up.delivery_slot_pref
-            data_return["pincode"] = up.pincode
-            result_dict["data"] = data_return
-            result_dict["message"] = "OTP registeration successfull."
-            result_dict["status"] = True
+            u = User.objects.get(phone_number=phone_number)
+            print(u)
+            try:
+                up = UserProfile.objects.get(user_fk=u)
+                data_return = {}
+                data_return["user_id"] = up.user_fk.id
+                data_return["address"] = up.address
+                data_return["delivery_slot"] = up.delivery_slot_pref
+                data_return["pincode"] = up.pincode
+                result_dict["data"] = data_return
+                result_dict["message"] = "OTP registeration successfull."
+                result_dict["status"] = True
+            except:
+                traceback.print_exc()
+                result_dict["message"] = "User Profile not found."
+                result_dict["status"] = True
         else:
             result_dict["message"] = "OTP not matched."    
     else:
-        result_dict["message"] = "OTP not found." 
+        result_dict["message"] = "OTP not found."
+    print(result_dict)
     return JsonResponse(result_dict)
 
 
@@ -179,7 +191,7 @@ def register_token(request):
         phone_number = data["phone_number"]
         token = data["token"]
         u = User.objects.get(phone_number=phone_number)
-        UserNotifToken.objects.create(user_fk=u, token=token)
+        UserNotifToken.objects.get_or_create(user_fk=u, token=token)
         result_dict["status"] = True
         result_dict["message"] = "Token Registered Succcessfully"
         result_dict["data"] = {"phone_number": phone_number, "token": token}

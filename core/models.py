@@ -40,12 +40,12 @@ class UserNotifToken(models.Model):
 
 
 class UserProfile(models.Model):
-    slot_1 = "7:00 - 7:30 AM"
-    slot_2 = "7:30 - 8:00 AM"
-    slot_3 = "8:00 - 8:30 AM"
-    slot_4 = "8:30 - 9:00 AM"
-    slot_5 = "9:00 - 9:30 AM"
-    slot_6 = "9:30 - 10:00 AM"
+    slot_1 = "7:00 AM - 7:30 AM"
+    slot_2 = "7:30 AM - 8:00 AM"
+    slot_3 = "8:00 AM - 8:30 AM"
+    slot_4 = "8:30 AM - 9:00 AM"
+    slot_5 = "9:00 AM - 9:30 AM"
+    slot_6 = "9:30 AM - 10:00 AM"
 
     SLOT_CHOICES = (
         (slot_1, slot_1),
