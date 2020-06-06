@@ -133,3 +133,4 @@ dmypy.json
 
 dump.rdb
 menuitems/
+worker.state
